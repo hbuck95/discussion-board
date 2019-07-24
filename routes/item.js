@@ -47,43 +47,23 @@ router.delete("/delete", (req,res) => {
     	item
 		  .remove()
 		  .then(() => {
-			res.json({ Successful: true });
+			res.json({ message: "Item successfully deleted." });
 		  })
 		  .catch(err =>
-			res.status(404).json({ NoItem: "No item found" })
+			res.status(404).json({ Error: "No item found" })
 		  );
 	  });
 });
 
 router.put("/update", (req,res) => {
-
-	const newItem = new Item({
-	  username: req.body.username,
-	  content: req.body.content
+	Item.findByIdAndUpdate(req.body._id, {$set:{
+		username: req.body.username, 
+		content: req.body.content}}, {new:true})
+	.then(() =>{
+		res.json({message: "Item successfully updated."});
+	}).catch((err) =>{
+		res.json(err);
 	});
-  
-	Item.findById(req.body._id)
-	  .then(items => {
-		if (!items) {
-		  errors.noItem = "There are no items with this ID";
-		  res.status(404).json(errors);
-		}
-  
-		items
-		.remove()
-		.then(() => {
-		  res.json({ Successful: true });
-		})
-		.catch(err =>
-		  res.status(404).json({ NoItem: "No item found" })
-		);
-  
-		newItem.save().then(item => res.json(item))
-		.catch(err => console.log(err));
-	  
-	  })
-	  .catch(err => res.status(404).json({ NoItem: "There is no item with this ID" }));
-  
-  });
+});
 
 module.exports = router;
