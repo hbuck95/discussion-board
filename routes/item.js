@@ -4,10 +4,16 @@ const _ = require("lodash");
 
 const Item = require("../models/item");
 
+const validateItemInput = require("../validator/Item");
+
 router.get("/test", (req, res) => res.json({"message": "This is a test message"}));
 
 router.post("/add", (req, res) => {
-    console.log(req.body)
+	
+	let validation = validateItemInput(req.body);	
+	if(!validation.isValid){
+		return res.status(400).json(validation.errors);
+	}
 
     Item(req.body).save().then(() =>
         res.end("Item added to DB."))
@@ -18,7 +24,6 @@ router.get("/getAll", (req, res) => {
     const errors = {};
     Item.find({})
 	.then(items => {
-		console.log(items.t);
 		if (items === undefined || items.length == 0) {
 			errors.noItems = "There are no items!";
 			res.status(404).json(errors);
@@ -32,7 +37,6 @@ router.get("/username", (req, res) => {
     const errors = {};
 	Item.find({username:req.body.username})
 	.then(items => {
-		console.log(items.t);
 		if (items === undefined || items.length == 0) {
 			errors.noItems = "There are no items!";
 			res.status(404).json(errors);
@@ -56,9 +60,14 @@ router.delete("/delete", (req,res) => {
 });
 
 router.put("/update", (req,res) => {
-	Item.findByIdAndUpdate(req.body._id, {$set:{
-		username: req.body.username, 
-		content: req.body.content}}, {new:true})
+	Item.findByIdAndUpdate(req.body._id, {
+		$set:{ 
+				username: req.body.username, 
+				content: req.body.content
+			}}, 
+			{
+				useFindAndModify:false
+			})
 	.then(() =>{
 		res.json({message: "Item successfully updated."});
 	}).catch((err) =>{
