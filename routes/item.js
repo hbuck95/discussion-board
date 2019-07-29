@@ -52,7 +52,7 @@ router.post("/getByUsername", (req, res) => {
 		}
 		res.json(items);
 	})
-	.catch(err => res.status(400).json({Error: err));
+	.catch(err => res.status(400).json({Error: err}));
 });
 
 router.delete("/delete", (req,res) => {
