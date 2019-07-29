@@ -42,7 +42,7 @@ router.get("/getAll", (req, res) => {
 	.catch(err => res.status(400).json(err));
 });
 
-router.get("/username", (req, res) => {
+router.post("/getByUsername", (req, res) => {
     const errors = {};
 	Item.find({username:req.body.username})
 	.then(items => {
@@ -52,7 +52,7 @@ router.get("/username", (req, res) => {
 		}
 		res.json(items);
 	})
-	.catch(err => res.status(404).json("Something bad happened."));
+	.catch(err => res.status(400).json({Error: err));
 });
 
 router.delete("/delete", (req,res) => {
